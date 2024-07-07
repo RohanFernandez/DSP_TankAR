@@ -7,41 +7,44 @@ public class GameManager : MonoBehaviour
     //Singleton instance
     private static GameManager s_Instance = null;
 
-    // Prefab object of the tank controller that needs to be instantiated
+    //Manages all tank related information
     [SerializeField]
-    private TankController m_TankControllerPrefab = null;
+    private TankManager m_TankManager = null;
 
-    // Prefab object of the canon rocket that needs to be instantiated
+    //Manages all UI
     [SerializeField]
-    private RocketProjectile m_RocketProjectilePrefab = null;
+    private UIManager m_UIManager = null;
 
-    // Parent gameobject of the tanks that would be instantiated as children
+    #region Game State
+
+    public enum GAME_STATE
+    { 
+        NONE            =   1000,
+        ADD_EDIT_TANK   =   0,
+        GAMEPLAY        =   1
+    }
+
     [SerializeField]
-    private GameObject m_ParentTankHolders = null;
+    private GAME_STATE m_CurrentGameState = GAME_STATE.NONE;
+    public GAME_STATE CurrentGameState
+    {
+        get { return m_CurrentGameState; }
+        private set {
+            if ((m_CurrentGameState != value) && (value != GAME_STATE.NONE))
+            {
+                m_CurrentGameState = value;
 
-    // Parent gameobject of the rocket projectile that would be instantiated as children
-    [SerializeField]
-    private GameObject m_ParentRocketProjectileHolders = null;
+                m_UIManager.onGameStateChanged(m_CurrentGameState);
+            }
+        }
+    }
 
-    // The mono object pool that manages the pool of tank objects
-    private MonoObjectPool<TankController> m_TankControllerPool = null;
+    public void setGameState(GAME_STATE a_GameState)
+    {
+        CurrentGameState = a_GameState;
+    }
 
-    // The mono object pool that manages the pool of rocket projectile objects
-    private MonoObjectPool<RocketProjectile> m_CanonObjectPool = null;
-
-    // The UI label that displays the number of tanks destroyed
-    [SerializeField]
-    private TMPro.TMP_Text m_txtTanksDestroyed = null;
-
-    // The UI label that displays the number of tanks currently alive
-    [SerializeField]
-    private TMPro.TMP_Text m_txtTanksAlive = null;
-
-    // Tanks currently alive
-    private int m_iTanksActive = 0;
-
-    // Tanks currently destroyed
-    private int m_iTanksDestroyed = 0;
+    #endregion Game State
 
     public void Awake()
     {
@@ -56,60 +59,15 @@ public class GameManager : MonoBehaviour
         if (s_Instance == null)
         {
             s_Instance = this;
+            m_TankManager.initialize();
+            m_UIManager.initialize(setGameState);
 
-            m_TankControllerPool = new MonoObjectPool<TankController>(m_TankControllerPrefab, m_ParentTankHolders, 6);
-            m_CanonObjectPool = new MonoObjectPool<RocketProjectile>(m_RocketProjectilePrefab, m_ParentRocketProjectileHolders, 4);
+            CurrentGameState = GAME_STATE.ADD_EDIT_TANK;
         }
     }
 
-    /// <summary>
-    /// Disables all tanks and canon rockets and resets the count to 0
-    /// </summary>
     public void resetGame()
     {
-        m_TankControllerPool.returnAll();
-        m_CanonObjectPool.returnAll();
-        m_iTanksActive = 0;
-        m_iTanksDestroyed = 0;
-        updateTanksAliveDestroyedUILabels();
-    }
-
-    /// <summary>
-    /// Manage active-destroyed tanks counter. Retrieve a new tank from the pool.
-    /// </summary>
-    /// <param name="a_v3TankPosition"></param>
-    public void addTank(Vector3 a_v3TankPosition)
-    {
-        TankController l_Tank = m_TankControllerPool.getObject();
-        l_Tank.setup(a_v3TankPosition, destroyTank, getRefRocketProjectile);
-        ++m_iTanksActive;
-        --m_iTanksDestroyed;
-        updateTanksAliveDestroyedUILabels();
-    }
-
-    public void getRefRocketProjectile(ref RocketProjectile a_CanonRocket)
-    {
-        a_CanonRocket = m_CanonObjectPool.getObject();
-    }
-
-    /// <summary>
-    /// Manage active-destroyed tanks counter. Return the tank destroyed back to the pool.
-    /// </summary>
-    /// <param name="a_Tank"></param>
-    public void destroyTank(TankController a_Tank)
-    {
-        m_TankControllerPool.returnToPool(a_Tank);
-        --m_iTanksActive;
-        ++m_iTanksDestroyed;
-        updateTanksAliveDestroyedUILabels();
-    }
-
-    /// <summary>
-    /// Updates the UI labels that display the tanks that are alive/destroyed
-    /// </summary>
-    private void updateTanksAliveDestroyedUILabels()
-    {
-        m_txtTanksDestroyed.text = m_iTanksDestroyed.ToString();
-        m_txtTanksAlive.text = m_iTanksActive.ToString();
+        m_TankManager.resetGame();
     }
 }
