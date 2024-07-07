@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.02254775, y: 0.02254775, z: 0.02254775}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2441619779048437458}
@@ -49,6 +49,7 @@ MonoBehaviour:
   m_fCanonRotationPerSec: 30
   m_transCanonRotationAxisTransform: {fileID: 2441619779048437458}
   m_transCanon: {fileID: 4601688116129695991}
+  mbShoot: 0
 --- !u!1 &4364393219516178911
 GameObject:
   m_ObjectHideFlags: 0

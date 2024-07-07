@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CanonRocket : MonoBehaviour, IReusable
+public class RocketProjectile : MonoBehaviour, IReusable
 {
     // The tank ref that shot the canon
     private TankController m_TankShooter = null;

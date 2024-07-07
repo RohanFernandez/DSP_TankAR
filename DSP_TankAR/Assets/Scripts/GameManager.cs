@@ -13,21 +13,21 @@ public class GameManager : MonoBehaviour
 
     // Prefab object of the canon rocket that needs to be instantiated
     [SerializeField]
-    private CanonRocket m_CanonRocketPrefab = null;
+    private RocketProjectile m_RocketProjectilePrefab = null;
 
     // Parent gameobject of the tanks that would be instantiated as children
     [SerializeField]
     private GameObject m_ParentTankHolders = null;
 
-    // Parent gameobject of the canon rocket that would be instantiated as children
+    // Parent gameobject of the rocket projectile that would be instantiated as children
     [SerializeField]
-    private GameObject m_ParentCanonRocketHolders = null;
+    private GameObject m_ParentRocketProjectileHolders = null;
 
     // The mono object pool that manages the pool of tank objects
     private MonoObjectPool<TankController> m_TankControllerPool = null;
 
-    // The mono object pool that manages the pool of canon rocket objects
-    private MonoObjectPool<CanonRocket> m_CanonObjectPool = null;
+    // The mono object pool that manages the pool of rocket projectile objects
+    private MonoObjectPool<RocketProjectile> m_CanonObjectPool = null;
 
     // The UI label that displays the number of tanks destroyed
     [SerializeField]
@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
             s_Instance = this;
 
             m_TankControllerPool = new MonoObjectPool<TankController>(m_TankControllerPrefab, m_ParentTankHolders, 6);
-            m_CanonObjectPool = new MonoObjectPool<CanonRocket>(m_CanonRocketPrefab, m_ParentCanonRocketHolders, 4);
+            m_CanonObjectPool = new MonoObjectPool<RocketProjectile>(m_RocketProjectilePrefab, m_ParentRocketProjectileHolders, 4);
         }
     }
 
@@ -81,10 +81,15 @@ public class GameManager : MonoBehaviour
     public void addTank(Vector3 a_v3TankPosition)
     {
         TankController l_Tank = m_TankControllerPool.getObject();
-        l_Tank.setup(a_v3TankPosition, destroyTank);
+        l_Tank.setup(a_v3TankPosition, destroyTank, getRefRocketProjectile);
         ++m_iTanksActive;
         --m_iTanksDestroyed;
         updateTanksAliveDestroyedUILabels();
+    }
+
+    public void getRefRocketProjectile(ref RocketProjectile a_CanonRocket)
+    {
+        a_CanonRocket = m_CanonObjectPool.getObject();
     }
 
     /// <summary>

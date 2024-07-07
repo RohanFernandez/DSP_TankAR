@@ -19,6 +19,10 @@ public class TankController : MonoBehaviour, IReusable
     // Callback on when this tank is hit by a rocket
     System.Action<TankController> m_actCallbackOnHit = null;
 
+    // Callback to get a canon rocket
+    public delegate void ReferencedAction<T>(ref T referencedItem);
+    private ReferencedAction<RocketProjectile> m_actCallbackGetCanonRocket = null;
+
     // Reset the canon on spawn. Resets the Canon rotation
     public void Reset()
     {
@@ -59,10 +63,11 @@ public class TankController : MonoBehaviour, IReusable
     /// Sets up the tank on spawn with a position and a callback on hit
     /// </summary>
     /// <param name="a_v3Position"></param>
-    public void setup(Vector3 a_v3Position, System.Action<TankController> callbackOnHit)
+    public void setup(Vector3 a_v3Position, System.Action<TankController> callbackOnHit, ReferencedAction<RocketProjectile> callbackGetCanonRocket)
     {
         transform.position = a_v3Position;
         m_actCallbackOnHit = callbackOnHit;
+        m_actCallbackGetCanonRocket = callbackGetCanonRocket;
     }
 
     /// <summary>
@@ -73,6 +78,31 @@ public class TankController : MonoBehaviour, IReusable
         if (m_actCallbackOnHit != null)
         {
             m_actCallbackOnHit(this);
+        }
+    }
+
+    public void shootCanon()
+    {
+        RocketProjectile l_RocketProjectile = null;
+        m_actCallbackGetCanonRocket(ref l_RocketProjectile);
+
+        if (l_RocketProjectile != null)
+        {
+            Debug.LogError("IS NOT NULL" + l_RocketProjectile.name);
+        }
+        else
+        {
+            Debug.LogError("IS NULL");
+        }
+    }
+
+    public bool mbShoot = false;
+    void Update()
+    {
+        if (mbShoot)
+        {
+            shootCanon();
+            mbShoot = false;
         }
     }
 }
