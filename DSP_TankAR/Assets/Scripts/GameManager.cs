@@ -6,6 +6,10 @@ public class GameManager : MonoBehaviour
 {
     //Singleton instance
     private static GameManager s_Instance = null;
+    public static GameManager Instance
+    {
+        get { return s_Instance; }
+    }
 
     //Manages all tank related information
     [SerializeField]
@@ -64,6 +68,11 @@ public class GameManager : MonoBehaviour
 
             CurrentGameState = GAME_STATE.ADD_EDIT_TANK;
         }
+    }
+
+    public void OnDestroy()
+    {
+        s_Instance = null;
     }
 
     public void resetGame()

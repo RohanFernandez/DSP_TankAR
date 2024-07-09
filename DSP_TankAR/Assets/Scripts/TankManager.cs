@@ -1,6 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Inputs;
+using UnityEngine.XR.Interaction.Toolkit.Utilities.Internal;
 
 public class TankManager : MonoBehaviour
 {
@@ -38,6 +43,12 @@ public class TankManager : MonoBehaviour
     [SerializeField]
     private UIManager m_UIManager = null;
 
+    // The current tank currently under the player's control
+    private TankController m_CurrentControlledTank = null;
+
+    [SerializeField]
+    Camera m_Camera;
+
     public void initialize()
     {
         if (!m_bIsInitialized)
@@ -45,7 +56,15 @@ public class TankManager : MonoBehaviour
             m_bIsInitialized = true;
             m_TankControllerPool = new MonoObjectPool<TankController>(m_TankControllerPrefab, m_ParentTankHolders, 6);
             m_CanonObjectPool = new MonoObjectPool<RocketProjectile>(m_RocketProjectilePrefab, m_ParentRocketProjectileHolders, 4);
+
+            m_SpawnAction.EnableDirectAction();
+            m_ARInteractor = m_ARInteractorObject as IARInteractor;
         }
+    }
+
+    public void OnDestroy()
+    {
+        m_SpawnAction.DisableDirectAction();
     }
 
     /// <summary>
@@ -57,7 +76,6 @@ public class TankManager : MonoBehaviour
         TankController l_Tank = m_TankControllerPool.getObject();
         l_Tank.setup(a_v3TankPosition, destroyTank, getRefRocketProjectile);
         ++m_iTanksActive;
-        --m_iTanksDestroyed;
         updateTanksAliveDestroyedUILabels();
     }
 
@@ -97,4 +115,67 @@ public class TankManager : MonoBehaviour
     {
        m_UIManager.updateTanksAliveDestroyedUILabels(m_iTanksActive, m_iTanksDestroyed);
     }
+
+    #region TANK SPAWNER
+    [SerializeField]
+    InputActionProperty m_SpawnAction = new(new InputAction(type: InputActionType.Button));
+
+    IARInteractor m_ARInteractor;
+
+    [SerializeField]
+    private Object m_ARInteractorObject;
+
+    [SerializeField]
+    [Tooltip("The size, in viewport units, of the periphery inside the viewport that will not be considered in view.")]
+    float m_ViewportPeriphery = 0.15f;
+
+    void Update()
+    {
+        if (m_SpawnAction.action.WasPerformedThisFrame() && (GameManager.Instance.CurrentGameState == GameManager.GAME_STATE.ADD_EDIT_TANK))
+        {
+            if (m_ARInteractor.TryGetCurrentARRaycastHit(out var arRaycastHit))
+            {
+                var arPlane = arRaycastHit.trackable as ARPlane;
+                if (arPlane == null)
+                    return;
+
+                if (arPlane.alignment != UnityEngine.XR.ARSubsystems.PlaneAlignment.HorizontalUp)
+                    return;
+
+                //m_ObjectSpawner.TrySpawnObject(arRaycastHit.pose.position, arPlane.normal);
+
+                
+                var inViewMin = m_ViewportPeriphery;
+                var inViewMax = 1.0f - m_ViewportPeriphery;
+                var pointInViewportSpace = m_Camera.WorldToViewportPoint(arRaycastHit.pose.position);
+                if (pointInViewportSpace.z < 0.0f || pointInViewportSpace.x > inViewMax || pointInViewportSpace.x < inViewMin ||
+                    pointInViewportSpace.y > inViewMax || pointInViewportSpace.y < inViewMin)
+                {
+                    return;
+                }
+
+                addTank(arRaycastHit.pose.position);
+
+                //var facePosition = m_CameraToFace.transform.position;
+                //var forward = facePosition - spawnPoint;
+                //BurstMathUtility.ProjectOnPlane(forward, spawnNormal, out var projectedForward);
+                //newObject.transform.rotation = Quaternion.LookRotation(projectedForward, spawnNormal);
+
+                //if (m_ApplyRandomAngleAtSpawn)
+                //{
+                //    var randomRotation = Random.Range(-m_SpawnAngleRange, m_SpawnAngleRange);
+                //    newObject.transform.Rotate(Vector3.up, randomRotation);
+                //}
+
+                //if (m_SpawnVisualizationPrefab != null)
+                //{
+                //    var visualizationTrans = Instantiate(m_SpawnVisualizationPrefab).transform;
+                //    visualizationTrans.position = spawnPoint;
+                //    visualizationTrans.rotation = newObject.transform.rotation;
+                //}
+            }
+        }
+    }
+
+    #endregion TANK SPAWNER
 }
