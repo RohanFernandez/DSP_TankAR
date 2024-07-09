@@ -49,16 +49,22 @@ public class InputController : MonoBehaviour
 
     void Update()
     {
-        var attemptSpawn = true;
-        //var currentControllerState = m_ARInteractorAsControllerInteractor.xrController.currentControllerState;
-        //if (currentControllerState.selectInteractionState.activatedThisFrame)
-        //    m_EverHadSelection = m_ARInteractorAsControllerInteractor.hasSelection;
-        //else if (currentControllerState.selectInteractionState.active)
-        //    m_EverHadSelection |= m_ARInteractorAsControllerInteractor.hasSelection;
-        //else if (currentControllerState.selectInteractionState.deactivatedThisFrame)
-        //    attemptSpawn = !m_ARInteractorAsControllerInteractor.hasSelection && !m_EverHadSelection;
+        var attemptSpawn = false;
+        var currentControllerState = m_ARInteractorAsControllerInteractor.xrController.currentControllerState;
+        if (currentControllerState.selectInteractionState.activatedThisFrame)
+        {
+            m_EverHadSelection = m_ARInteractorAsControllerInteractor.hasSelection;
+        }
+        else if (currentControllerState.selectInteractionState.active)
+        {
+            m_EverHadSelection |= m_ARInteractorAsControllerInteractor.hasSelection;
+        }
+        else if (currentControllerState.selectInteractionState.deactivatedThisFrame)
+        {
+            attemptSpawn = !m_ARInteractorAsControllerInteractor.hasSelection && !m_EverHadSelection;
+        }
 
-        if (attemptSpawn && m_SpawnAction.action.WasPerformedThisFrame() && (GameManager.Instance.CurrentGameState == GameManager.GAME_STATE.ADD_EDIT_TANK))
+        if (attemptSpawn && (GameManager.Instance.CurrentGameState == GameManager.GAME_STATE.ADD_EDIT_TANK))
         {
             ARRaycastHit l_outARRaycastHit;
             if (m_ARInteractor.TryGetCurrentARRaycastHit(out l_outARRaycastHit))
