@@ -63,9 +63,12 @@ public class TankController : MonoBehaviour, IReusable
     /// Sets up the tank on spawn with a position and a callback on hit
     /// </summary>
     /// <param name="a_v3Position"></param>
-    public void setup(Vector3 a_v3Position, System.Action<TankController> callbackOnHit, ReferencedAction<RocketProjectile> callbackGetCanonRocket)
+    public void setup(Vector3 a_v3Position, Camera a_Camera, System.Action<TankController> callbackOnHit, ReferencedAction<RocketProjectile> callbackGetCanonRocket)
     {
         transform.position = a_v3Position;
+        UnityEngine.XR.Interaction.Toolkit.Utilities.BurstMathUtility.ProjectOnPlane(a_Camera.transform.position - a_v3Position, Vector3.up, out var l_OutPojectedForward);
+        transform.rotation = Quaternion.LookRotation(l_OutPojectedForward, Vector3.up);
+
         m_actCallbackOnHit = callbackOnHit;
         m_actCallbackGetCanonRocket = callbackGetCanonRocket;
     }

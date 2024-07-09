@@ -19,6 +19,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private UIManager m_UIManager = null;
 
+    //Manages all input
+    [SerializeField]
+    private InputController m_InputController = null;
+
     #region Game State
 
     public enum GAME_STATE
@@ -52,19 +56,20 @@ public class GameManager : MonoBehaviour
 
     public void Awake()
     {
-        Initialize();
+        initialize();
     }
 
     /// <summary>
     /// Initialize managers on begin
     /// </summary>
-    public void Initialize()
+    public void initialize()
     {
         if (s_Instance == null)
         {
             s_Instance = this;
             m_TankManager.initialize();
             m_UIManager.initialize(setGameState);
+            m_InputController.initialize(m_TankManager);
 
             CurrentGameState = GAME_STATE.ADD_EDIT_TANK;
         }
