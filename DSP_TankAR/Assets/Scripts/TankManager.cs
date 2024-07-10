@@ -90,6 +90,17 @@ public class TankManager : MonoBehaviour
         {
             m_CurrentControlledTank.toggleSelector(true);
         }
+
+        if (m_CurrentControlledTank == null)
+        {
+            //Hide UI controller panel
+            m_UIManager.toggleUIBottomPanel(false);
+        }
+        else
+        {
+            //show UI controller panel
+            m_UIManager.toggleUIBottomPanel(true);
+        }
     }
 
     /// <summary>

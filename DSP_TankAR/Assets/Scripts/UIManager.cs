@@ -26,6 +26,9 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private TMPro.TMP_Text m_txtGamestateLable = null;
 
+    [SerializeField]
+    private GameObject m_UIBottomPanel = null;
+
     public void initialize(System.Action<GameManager.GAME_STATE> a_actOnGameStateSet)
     {
         if (!m_bIsInitialized)
@@ -65,5 +68,14 @@ public class UIManager : MonoBehaviour
     {
         m_txtTanksDestroyed.text = a_iTanksDestroyed.ToString();
         m_txtTanksAlive.text = a_iTanksActive.ToString();
+    }
+
+    /// <summary>
+    /// Show / Hide the bottom panel
+    /// </summary>
+    /// <param name="a_bIsShow"></param>
+    public void toggleUIBottomPanel(bool a_bIsShow)
+    {
+        m_UIBottomPanel.SetActive(a_bIsShow);
     }
 }

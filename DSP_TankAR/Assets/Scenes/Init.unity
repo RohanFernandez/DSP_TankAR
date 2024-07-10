@@ -1596,6 +1596,7 @@ MonoBehaviour:
   m_txtTanksDestroyed: {fileID: 1473505198}
   m_txtTanksAlive: {fileID: 283556974}
   m_txtGamestateLable: {fileID: 1474258313}
+  m_UIBottomPanel: {fileID: 1486449382}
 --- !u!114 &1297582681
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1972,7 +1973,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1486449383
 RectTransform:
   m_ObjectHideFlags: 0

@@ -5,10 +5,10 @@ using UnityEngine.InputSystem;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Inputs;
+using ETouch = UnityEngine.InputSystem.EnhancedTouch;
 
 public class InputController : MonoBehaviour
 {
-
     //Checks so that a single instance would only exist/initialized
     private bool m_bIsInitialized = false;
 
@@ -29,7 +29,7 @@ public class InputController : MonoBehaviour
 
     [SerializeField]
     [Tooltip("The size, in viewport units, of the periphery inside the viewport that will not be considered in view.")]
-    float m_ViewportPeriphery = 0.15f;
+    private float m_ViewportPeriphery = 0.15f;
 
     public void initialize(TankManager a_TankManager)
     {
@@ -40,6 +40,35 @@ public class InputController : MonoBehaviour
             m_ARInteractorAsControllerInteractor = m_ARInteractorObject as XRBaseControllerInteractor;
             m_SpawnAction.EnableDirectAction();
         }
+    }
+
+    private void OnEnable()
+    {
+        ETouch.Touch.onFingerDown += callbackOnTouchOnFingerDown;
+        ETouch.Touch.onFingerUp += callbackOnTouchOnFingerUp;
+        ETouch.Touch.onFingerMove += callbackOnTouchOnFingerMove;
+    }
+
+    private void OnDisable()
+    {
+        ETouch.Touch.onFingerDown -= callbackOnTouchOnFingerDown;
+        ETouch.Touch.onFingerUp -= callbackOnTouchOnFingerUp;
+        ETouch.Touch.onFingerMove -= callbackOnTouchOnFingerMove;
+    }
+
+    private void callbackOnTouchOnFingerDown(ETouch.Finger a_Finger)
+    { 
+        
+    }
+
+    private void callbackOnTouchOnFingerUp(ETouch.Finger a_Finger)
+    {
+
+    }
+
+    private void callbackOnTouchOnFingerMove(ETouch.Finger a_Finger)
+    {
+
     }
 
     private void OnDestroy()
