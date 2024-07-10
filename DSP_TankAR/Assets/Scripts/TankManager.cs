@@ -64,14 +64,32 @@ public class TankManager : MonoBehaviour
     public void addTank(Vector3 a_v3TankPosition, Camera a_Camera)
     {
         TankController l_Tank = m_TankControllerPool.getObject();
-        l_Tank.setup(a_v3TankPosition, a_Camera, destroyTank, getRefRocketProjectile);
+        l_Tank.setup(a_v3TankPosition, a_Camera, destroyTank, getRefRocketProjectile, onTankControllerSelected);
         ++m_iTanksActive;
         updateTanksAliveDestroyedUILabels();
+
+        if (m_iTanksActive == 1)
+        {
+            onTankControllerSelected(l_Tank);
+        }
     }
 
     public void getRefRocketProjectile(ref RocketProjectile a_CanonRocket)
     {
         a_CanonRocket = m_CanonObjectPool.getObject();
+    }
+
+    public void onTankControllerSelected(TankController a_TankController)
+    {
+        if (m_CurrentControlledTank != null)
+        {
+            m_CurrentControlledTank.toggleSelector(false);
+        }
+        m_CurrentControlledTank = a_TankController;
+        if (m_CurrentControlledTank != null)
+        {
+            m_CurrentControlledTank.toggleSelector(true);
+        }
     }
 
     /// <summary>
@@ -84,6 +102,11 @@ public class TankManager : MonoBehaviour
         --m_iTanksActive;
         ++m_iTanksDestroyed;
         updateTanksAliveDestroyedUILabels();
+
+        if (m_CurrentControlledTank == a_Tank)
+        {
+            onTankControllerSelected(null);
+        }
     }
 
     /// <summary>
@@ -92,6 +115,7 @@ public class TankManager : MonoBehaviour
     public void resetGame()
     {
         m_TankControllerPool.returnAll();
+        onTankControllerSelected(null);
         m_CanonObjectPool.returnAll();
         m_iTanksActive = 0;
         m_iTanksDestroyed = 0;
