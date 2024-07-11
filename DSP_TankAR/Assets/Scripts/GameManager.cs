@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
                 m_CurrentGameState = value;
 
                 m_UIManager.onGameStateChanged(m_CurrentGameState);
+                m_TankManager.onGameStateChanged(m_CurrentGameState);
             }
         }
     }

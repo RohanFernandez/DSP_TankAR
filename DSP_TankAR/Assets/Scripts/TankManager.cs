@@ -64,7 +64,7 @@ public class TankManager : MonoBehaviour
     public void addTank(Vector3 a_v3TankPosition, Camera a_Camera)
     {
         TankController l_Tank = m_TankControllerPool.getObject();
-        l_Tank.setup(a_v3TankPosition, a_Camera, destroyTank, getRefRocketProjectile, onTankControllerSelected);
+        l_Tank.setup(a_v3TankPosition, a_Camera, destroyTank, getRefRocketProjectile, returnRefRocketProjectile, onTankControllerSelected);
         ++m_iTanksActive;
         updateTanksAliveDestroyedUILabels();
 
@@ -79,6 +79,11 @@ public class TankManager : MonoBehaviour
         a_CanonRocket = m_CanonObjectPool.getObject();
     }
 
+    public void returnRefRocketProjectile(RocketProjectile a_CanonRocket)
+    {
+        m_CanonObjectPool.returnToPool(a_CanonRocket);
+    }
+
     public void onTankControllerSelected(TankController a_TankController)
     {
         if (m_CurrentControlledTank != null)
@@ -91,15 +96,15 @@ public class TankManager : MonoBehaviour
             m_CurrentControlledTank.toggleSelector(true);
         }
 
-        if (m_CurrentControlledTank == null)
-        {
-            //Hide UI controller panel
-            m_UIManager.toggleUIBottomPanel(false);
-        }
-        else
+        if ((m_CurrentControlledTank != null) && (GameManager.Instance.CurrentGameState == GameManager.GAME_STATE.GAMEPLAY))
         {
             //show UI controller panel
             m_UIManager.toggleUIBottomPanel(true);
+        }
+        else
+        {
+            //Hide UI controller panel
+            m_UIManager.toggleUIBottomPanel(false);
         }
     }
 
@@ -139,5 +144,24 @@ public class TankManager : MonoBehaviour
     private void updateTanksAliveDestroyedUILabels()
     {
        m_UIManager.updateTanksAliveDestroyedUILabels(m_iTanksActive, m_iTanksDestroyed);
+    }
+
+    public void shootRocketFromSelectedTank()
+    {
+        if (m_CurrentControlledTank != null)
+        {
+            m_CurrentControlledTank.shootCanon();
+        }
+    }
+
+    public void onGameStateChanged(GameManager.GAME_STATE a_GameState)
+    {
+        if (a_GameState == GameManager.GAME_STATE.GAMEPLAY)
+        {
+            if (m_CurrentControlledTank != null)
+            {
+                m_UIManager.toggleUIBottomPanel(true);
+            }
+        }
     }
 }

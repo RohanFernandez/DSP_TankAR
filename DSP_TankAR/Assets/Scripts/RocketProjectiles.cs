@@ -8,24 +8,25 @@ public class RocketProjectile : MonoBehaviour, IReusable
     private TankController m_TankShooter = null;
 
     // The time the canon rocket will be active for
-    private float m_fCanonActivationTime = 1.0f;
+    private float m_fCanonActivationTime = 4.0f;
 
     // The velocity the canon is shot with
-    private Vector3 m_v3CanonShootVelocity = Vector3.zero;
+    [SerializeField]
+    private float m_fCanonShootSpeed = 2.0f;
 
     // Action on completion of the canon rocket movement
-    private System.Action m_actOnCanonExistanceEnd = null;
+    private System.Action<RocketProjectile> m_actOnCanonExistanceEnd = null;
 
     /// <summary>
     /// Sets up the canon rocket when it is spawned and then fired
     /// </summary>
     /// <param name="a_TankShooter"></param>
-    /// <param name="a_ShootVelocity"></param>
     /// <param name="a_actOnCanonExistanceEnd"></param>
-    public void setup(TankController a_TankShooter, Vector3 a_ShootVelocity, System.Action a_actOnCanonExistanceEnd)
+    public void setup(TankController a_TankShooter, System.Action<RocketProjectile> a_actOnCanonExistanceEnd)
     {
         m_TankShooter = a_TankShooter;
         m_actOnCanonExistanceEnd = a_actOnCanonExistanceEnd;
+        m_fCurrentActiveTime = 0.0f;
     }
 
     void IReusable.onRetrievedFromPool()
@@ -50,7 +51,22 @@ public class RocketProjectile : MonoBehaviour, IReusable
             l_TankHit.onTankHit();
             if (m_actOnCanonExistanceEnd != null)
             {
-                m_actOnCanonExistanceEnd();
+                m_actOnCanonExistanceEnd(this);
+            }
+        }
+    }
+
+    float m_fCurrentActiveTime = 0.0f;
+    private void Update()
+    {
+        m_fCurrentActiveTime += Time.deltaTime;
+        transform.position += transform.forward * m_fCanonShootSpeed * Time.deltaTime;
+
+        if (m_fCurrentActiveTime > m_fCanonActivationTime)
+        {
+            if (m_actOnCanonExistanceEnd != null)
+            {
+                m_actOnCanonExistanceEnd(this);
             }
         }
     }

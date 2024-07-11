@@ -22,6 +22,8 @@ public class TankController : MonoBehaviour, IReusable
     // Callback on when this tank is selected
     System.Action<TankController> m_actOnTankSelected = null;
 
+    System.Action<RocketProjectile> m_actOnReturnRocket = null;
+
     // Callback to get a canon rocket
     public delegate void ReferencedAction<T>(ref T referencedItem);
     private ReferencedAction<RocketProjectile> m_actCallbackGetCanonRocket = null;
@@ -31,6 +33,9 @@ public class TankController : MonoBehaviour, IReusable
 
     [SerializeField]
     private GameObject m_Selector = null;
+
+    [SerializeField]
+    private GameObject m_RocketSpawnPosition = null;
 
     // Reset the canon on spawn. Resets the Canon rotation
     public void Reset()
@@ -84,7 +89,7 @@ public class TankController : MonoBehaviour, IReusable
     /// Sets up the tank on spawn with a position and a callback on hit
     /// </summary>
     /// <param name="a_v3Position"></param>
-    public void setup(Vector3 a_v3Position, Camera a_Camera, System.Action<TankController> callbackOnHit, ReferencedAction<RocketProjectile> callbackGetCanonRocket, System.Action<TankController> callbackOnSelected)
+    public void setup(Vector3 a_v3Position, Camera a_Camera, System.Action<TankController> callbackOnHit, ReferencedAction<RocketProjectile> callbackGetCanonRocket, System.Action<RocketProjectile> callbackOnReturnRocket, System.Action<TankController> callbackOnSelected)
     {
         transform.position = a_v3Position;
         UnityEngine.XR.Interaction.Toolkit.Utilities.BurstMathUtility.ProjectOnPlane(a_Camera.transform.position - a_v3Position, Vector3.up, out var l_OutProjectedForward);
@@ -93,6 +98,7 @@ public class TankController : MonoBehaviour, IReusable
         m_actCallbackOnHit = callbackOnHit;
         m_actCallbackGetCanonRocket = callbackGetCanonRocket;
         m_actOnTankSelected = callbackOnSelected;
+        m_actOnReturnRocket = callbackOnReturnRocket;
     }
 
     /// <summary>
@@ -113,11 +119,10 @@ public class TankController : MonoBehaviour, IReusable
 
         if (l_RocketProjectile != null)
         {
-            Debug.LogError("IS NOT NULL" + l_RocketProjectile.name);
-        }
-        else
-        {
-            Debug.LogError("IS NULL");
+            l_RocketProjectile.transform.SetParent(m_RocketSpawnPosition.transform);
+            l_RocketProjectile.transform.localPosition = Vector3.zero;
+            l_RocketProjectile.transform.localRotation = Quaternion.identity;
+            l_RocketProjectile.setup(this, m_actOnReturnRocket);
         }
     }
 

@@ -35,6 +35,7 @@ public class UIManager : MonoBehaviour
         {
             m_bIsInitialized = true;
             m_actOnGameStateSet = a_actOnGameStateSet;
+            toggleUIBottomPanel(false);
         }
     }
 
@@ -58,13 +59,14 @@ public class UIManager : MonoBehaviour
         else {
             m_toggleGameState.isOn = true;
             m_txtGamestateLable.text = LABLE_ADD_REPOSITION_TANK;
+            toggleUIBottomPanel(false);
         }
     }
 
     /// <summary>
     /// Updates the UI labels that display the tanks that are alive/destroyed
     /// </summary>
-    public void updateTanksAliveDestroyedUILabels(int a_iTanksDestroyed, int a_iTanksActive)
+    public void updateTanksAliveDestroyedUILabels(int a_iTanksActive, int a_iTanksDestroyed)
     {
         m_txtTanksDestroyed.text = a_iTanksDestroyed.ToString();
         m_txtTanksAlive.text = a_iTanksActive.ToString();
