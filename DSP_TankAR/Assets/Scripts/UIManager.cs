@@ -12,8 +12,8 @@ public class UIManager : MonoBehaviour
 
     System.Action<GameManager.GAME_STATE> m_actOnGameStateSet = null;
 
-    private const string LABLE_GAMEPLAY = "Add / Reposition Tank\n MODE: OFF";
-    private const string LABLE_ADD_REPOSITION_TANK = "Add / Reposition Tank\n MODE: ON";
+    private const string LABLE_GAMEPLAY = "Add Tank\n MODE: OFF";
+    private const string LABLE_ADD_REPOSITION_TANK = "Add Tank\n MODE: ON";
 
     // The UI label that displays the number of tanks destroyed
     [SerializeField]
