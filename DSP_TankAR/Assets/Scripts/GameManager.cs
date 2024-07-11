@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour
 
                 m_UIManager.onGameStateChanged(m_CurrentGameState);
                 m_TankManager.onGameStateChanged(m_CurrentGameState);
+                m_InputController.onGameStateChanged(m_CurrentGameState);
             }
         }
     }
@@ -84,5 +85,6 @@ public class GameManager : MonoBehaviour
     public void resetGame()
     {
         m_TankManager.resetGame();
+        CurrentGameState = GAME_STATE.ADD_EDIT_TANK;
     }
 }

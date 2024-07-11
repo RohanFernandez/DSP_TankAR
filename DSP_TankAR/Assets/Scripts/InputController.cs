@@ -64,7 +64,7 @@ public class InputController : MonoBehaviour
         }
     }
 
-    private void OnEnable()
+    private void EnableTouchCallbacks()
     {
         ETouch.EnhancedTouchSupport.Enable();
         ETouch.Touch.onFingerDown += callbackOnTouchOnFingerDown;
@@ -72,7 +72,7 @@ public class InputController : MonoBehaviour
         ETouch.Touch.onFingerMove += callbackOnTouchOnFingerMove;
     }
 
-    private void OnDisable()
+    private void DisableTouchCallbacks()
     {
         ETouch.Touch.onFingerDown -= callbackOnTouchOnFingerDown;
         ETouch.Touch.onFingerUp -= callbackOnTouchOnFingerUp;
@@ -238,6 +238,18 @@ public class InputController : MonoBehaviour
     private void OnDestroy()
     {
         m_SpawnAction.DisableDirectAction();
+    }
+
+    public void onGameStateChanged(GameManager.GAME_STATE a_GameState)
+    {
+        if (a_GameState == GameManager.GAME_STATE.GAMEPLAY)
+        {
+            EnableTouchCallbacks();
+        }
+        else
+        {
+            DisableTouchCallbacks();
+        }
     }
 
     void Update()
