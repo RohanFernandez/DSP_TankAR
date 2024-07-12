@@ -1580,6 +1580,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1000234690 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2512387470528047718, guid: 48cb3fb68c91eb94999fd99957eb0cae,
+    type: 3}
+  m_PrefabInstance: {fileID: 770180923}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa17d122634046b4a8e23048891fafc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1014526459
 GameObject:
   m_ObjectHideFlags: 0
@@ -1918,6 +1930,7 @@ MonoBehaviour:
   m_LeftRectJoystickKnob: {fileID: 1318829743}
   m_LeftDirectionMovement: {x: 0, y: 0}
   m_UiManager: {fileID: 1297582680}
+  m_ARRaycastManager: {fileID: 1000234690}
 --- !u!1 &1318829742
 GameObject:
   m_ObjectHideFlags: 0

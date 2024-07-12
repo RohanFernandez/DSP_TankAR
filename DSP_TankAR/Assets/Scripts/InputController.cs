@@ -103,25 +103,57 @@ public class InputController : MonoBehaviour
         Vector2 l_v3JoystickAreaScreenPosition = Vector2.zero;
         float l_fDistanceFromKnobCenter = 0.0f;
 
-        //Manages tapping on a tank controller
-        Ray l_Ray = m_Camera.ScreenPointToRay(a_Finger.screenPosition);
+        //Manages tapping on a tank controller to select that tank as the current controlled tank
+        bool l_bRaycastDetectedTank = false;
+        Ray l_Ray = m_Camera.ScreenPointToRay(a_Finger.currentTouch.screenPosition);
         if (Physics.Raycast(l_Ray, out RaycastHit l_outHitInfo))
         {
             TankController l_TankControllerSelected = l_outHitInfo.transform.GetComponent<TankController>();
             if (l_TankControllerSelected != null)
             {
                 l_TankControllerSelected.onSelected();
+                l_bRaycastDetectedTank = true;
+            }
+        }
+
+        //If the raycast did  not cast onto a tank then we need to instantiate a new tank at that plane point if a ray cast returned an AR plane
+        if (!l_bRaycastDetectedTank)
+        {
+            if (GameManager.Instance.CurrentGameState == GameManager.GAME_STATE.ADD_EDIT_TANK)
+            {
+                List<ARRaycastHit> l_lstARRaycastHit = new List<ARRaycastHit>(2);
+                if (m_ARRaycastManager.Raycast(a_Finger.currentTouch.screenPosition, l_lstARRaycastHit, UnityEngine.XR.ARSubsystems.TrackableType.PlaneWithinPolygon))
+                {
+                    if(l_lstARRaycastHit.Count > 0)
+                    {
+                        ARRaycastHit l_RaycastHit = l_lstARRaycastHit[0];
+                        ARPlane l_ARPlane = (ARPlane)l_RaycastHit.trackable;
+
+                        if (l_ARPlane != null)
+                        {
+                            float inViewMin = m_ViewportPeriphery;
+                            float inViewMax = 1.0f - m_ViewportPeriphery;
+                            Vector3 l_v3PointInViewportSpace = m_Camera.WorldToViewportPoint(l_RaycastHit.pose.position);
+                            if (!(l_v3PointInViewportSpace.z < 0.0f || l_v3PointInViewportSpace.x > inViewMax || l_v3PointInViewportSpace.x < inViewMin ||
+                                l_v3PointInViewportSpace.y > inViewMax || l_v3PointInViewportSpace.y < inViewMin))
+                            {
+                                m_TankManager.addTank(l_RaycastHit.pose.position, m_Camera);
+                            }
+                        }
+                    }
+                }
             }
         }
 
 
+        //Manage the bottom panel i.e. two joysticks and the fire button
         bool l_bIsLeftFinger = true;
 
         if (a_Finger.screenPosition.x > (Screen.width * 0.5f))
         {
             l_v3JoystickAreaScreenPosition = m_RightRectJoystickArea.TransformPoint(m_RightRectJoystickArea.rect.center);
             float l_RectHalf = m_RightRectJoystickArea.rect.width * 0.5f;
-            l_fDistanceFromKnobCenter = Vector2.Distance(a_Finger.screenPosition, l_v3JoystickAreaScreenPosition);
+            l_fDistanceFromKnobCenter = Vector2.Distance(a_Finger.currentTouch.screenPosition, l_v3JoystickAreaScreenPosition);
 
             //Right finger
             if ((m_FingerRight == null) && (l_fDistanceFromKnobCenter < l_RectHalf))
@@ -137,7 +169,7 @@ public class InputController : MonoBehaviour
         {
             l_v3JoystickAreaScreenPosition = m_LeftRectJoystickArea.TransformPoint(m_LeftRectJoystickArea.rect.center);
             float l_RectHalf = m_LeftRectJoystickArea.rect.width * 0.5f;
-            l_fDistanceFromKnobCenter = Vector2.Distance(a_Finger.screenPosition, l_v3JoystickAreaScreenPosition);
+            l_fDistanceFromKnobCenter = Vector2.Distance(a_Finger.currentTouch.screenPosition, l_v3JoystickAreaScreenPosition);
 
             //Left finger
             if (m_FingerLeft == null && (l_fDistanceFromKnobCenter < l_RectHalf))
@@ -149,10 +181,11 @@ public class InputController : MonoBehaviour
             }
         }
 
+        //Manages current finger with the right or left joystick and sets the axis values
         if (l_CurrentFinger != null)
         {
             float l_RectHalf = l_rectCurrentJoystickArea.rect.width * 0.5f;
-            Vector2 l_v2MoveDirection = (l_CurrentFinger.screenPosition - l_v3JoystickAreaScreenPosition) / l_RectHalf;
+            Vector2 l_v2MoveDirection = (l_CurrentFinger.currentTouch.screenPosition - l_v3JoystickAreaScreenPosition) / l_RectHalf;
             if (l_bIsLeftFinger)
             {
                 m_LeftDirectionMovement = l_v2MoveDirection;
@@ -163,12 +196,12 @@ public class InputController : MonoBehaviour
             }
             l_rectCurrentJoystickKnob.anchoredPosition = l_v2MoveDirection * l_RectHalf;
         }
-        else
+        else//Manages multi-touch for the fire button because the Unity button event is not fired when multi touch is present
         {
             if (m_FingerRight != null || m_FingerLeft != null)
             {
                 RectTransform l_rectBtn = m_UiManager.BtnFire.GetComponent<RectTransform>();
-                l_rectBtn.rect.Contains(a_Finger.screenPosition);
+                l_rectBtn.rect.Contains(a_Finger.currentTouch.screenPosition);
                 m_UiManager.BtnFire.onClick.Invoke();
             }
         }
@@ -181,7 +214,7 @@ public class InputController : MonoBehaviour
         RectTransform l_rectCurrentJoystickArea = null;
         bool l_bIsLeftFinger = true;
 
-        if (a_Finger.screenPosition.x > (Screen.width * 0.5f))
+        if (a_Finger.currentTouch.screenPosition.x > (Screen.width * 0.5f))
         {
             //Right finger
             if (m_FingerRight != null)
@@ -226,7 +259,7 @@ public class InputController : MonoBehaviour
         RectTransform l_rectCurrentJoystickKnob = null;
         bool l_bIsLeftFinger = true;
 
-        if (a_Finger.screenPosition.x > (Screen.width * 0.5f))
+        if (a_Finger.currentTouch.screenPosition.x > (Screen.width * 0.5f))
         {
             //Right finger
             if (m_FingerRight != null)
@@ -254,7 +287,7 @@ public class InputController : MonoBehaviour
         {
             float l_fJoystickHalfAreaDistance = (l_rectCurrentJoystickArea.rect.width * 0.5f);
             Vector2 l_v3JoystickAreaScreenPosition = l_rectCurrentJoystickArea.TransformPoint(l_rectCurrentJoystickArea.rect.center);
-            Vector2 l_v2Move = (l_CurrentFinger.screenPosition - l_v3JoystickAreaScreenPosition);
+            Vector2 l_v2Move = (l_CurrentFinger.currentTouch.screenPosition - l_v3JoystickAreaScreenPosition);
 
             Vector2 l_v2MoveDirection = l_v2Move.normalized;
             float l_fMoveDistance = Mathf.Min(l_v2Move.magnitude, l_fJoystickHalfAreaDistance);
@@ -276,8 +309,7 @@ public class InputController : MonoBehaviour
         m_SpawnAction.DisableDirectAction();
     }
 
-    public bool l_shoot = false;
-
+#if UNITY_EDITOR
     void Update()
     {
         var attemptSpawn = false;
@@ -318,4 +350,5 @@ public class InputController : MonoBehaviour
             }
         }
     }
+#endif
 }
