@@ -14,9 +14,6 @@ public class InputController : MonoBehaviour
 
     private TankManager m_TankManager = null;
 
-    [SerializeField]
-    InputActionProperty m_SpawnAction = new(new InputAction(type: InputActionType.Button));
-
     IARInteractor m_ARInteractor;
     XRBaseControllerInteractor m_ARInteractorAsControllerInteractor;
     bool m_EverHadSelection;
@@ -73,7 +70,6 @@ public class InputController : MonoBehaviour
             m_TankManager = a_TankManager;
             m_ARInteractor = m_ARInteractorObject as IARInteractor;
             m_ARInteractorAsControllerInteractor = m_ARInteractorObject as XRBaseControllerInteractor;
-            m_SpawnAction.EnableDirectAction();
         }
     }
 
@@ -302,11 +298,6 @@ public class InputController : MonoBehaviour
             }
             l_rectCurrentJoystickKnob.anchoredPosition = (l_v2MoveDirection * l_fMoveDistance);
         }
-    }
-
-    private void OnDestroy()
-    {
-        m_SpawnAction.DisableDirectAction();
     }
 
 #if UNITY_EDITOR
