@@ -54,12 +54,6 @@ public class TankController : MonoBehaviour, IReusable
     [SerializeField]
     private float m_fTankSpeed = 20.0f;
 
-    // Reset the canon on spawn. Resets the Canon rotation
-    public void Reset()
-    {
-        //m_transCanon.rotation = Quaternion.identity;
-    }
-
     /// <summary>
     /// Rotates the cannon.
     /// Clockwise/Anti-clockwise with 
@@ -78,9 +72,9 @@ public class TankController : MonoBehaviour, IReusable
 
     void IReusable.onRetrievedFromPool()
     {
-        Reset();
         toggleVisibility(true);
         toggleSelector(false);
+        //m_Interactable.firstSelectEntered.AddListener(OnFirstSelectEntered);
         m_Interactable.firstSelectEntered.AddListener(OnFirstSelectEntered);
     }
 
@@ -88,6 +82,7 @@ public class TankController : MonoBehaviour, IReusable
     {
         toggleVisibility(false);
         toggleSelector(false);
+        //m_Interactable.firstSelectEntered.RemoveListener(OnFirstSelectEntered);
         m_Interactable.firstSelectEntered.RemoveListener(OnFirstSelectEntered);
     }
 

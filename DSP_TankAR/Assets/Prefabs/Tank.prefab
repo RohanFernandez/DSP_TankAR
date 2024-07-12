@@ -51,13 +51,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40705da490b948c449c4a5394c652356, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_fCanonRotationPerSec: 100
+  m_fCanonRotationPerSec: 180
   m_transCanonRotationAxisTransform: {fileID: 2441619779048437458}
   m_transCanon: {fileID: 4601688116129695991}
   m_Interactable: {fileID: 6832559798318463594}
   m_Selector: {fileID: 8373409490007058263}
   m_RocketSpawnPosition: {fileID: 8457041451052617016}
-  m_fMaxMoveRotaion: 20
+  m_fMaxMoveRotaion: 180
   m_RigidBody: {fileID: 2202851540707755023}
   m_fTankSpeed: 11
 --- !u!54 &2202851540707755023
