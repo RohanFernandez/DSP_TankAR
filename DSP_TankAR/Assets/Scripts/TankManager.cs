@@ -89,6 +89,7 @@ public class TankManager : MonoBehaviour
         m_CanonObjectPool.returnToPool(a_CanonRocket);
     }
 
+
     public void onTankControllerSelected(TankController a_TankController)
     {
         if (m_CurrentControlledTank != null)
@@ -151,6 +152,9 @@ public class TankManager : MonoBehaviour
        m_UIManager.updateTanksAliveDestroyedUILabels(m_iTanksActive, m_iTanksDestroyed);
     }
 
+    /// <summary>
+    /// Callback on canon fire button clicked
+    /// </summary>
     public void shootRocketFromSelectedTank()
     {
         if (m_CurrentControlledTank != null)
@@ -170,6 +174,9 @@ public class TankManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the joystick to canon rotation/ tank movement
+    /// </summary>
     private void Update()
     {
         if ((GameManager.Instance.CurrentGameState == GameManager.GAME_STATE.GAMEPLAY) && (m_CurrentControlledTank != null))
@@ -177,6 +184,11 @@ public class TankManager : MonoBehaviour
             if (m_InputController.RightJoystickMovement != Vector2.zero)
             {
                 m_CurrentControlledTank.rotateCannon(m_Camera.transform.TransformDirection(m_InputController.RightJoystickMovement.normalized));
+            }
+
+            if (m_InputController.LeftJoystickMovement != Vector2.zero)
+            {
+                m_CurrentControlledTank.moveInDirection(m_Camera.transform.TransformDirection(m_InputController.LeftJoystickMovement.normalized));
             }
         }
     }

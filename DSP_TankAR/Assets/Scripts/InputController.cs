@@ -61,7 +61,7 @@ public class InputController : MonoBehaviour
     }
 
     [SerializeField]
-    TMPro.TMP_Text m_txtMoveVals = null;
+    private UIManager m_UiManager = null;
 
     public void initialize(TankManager a_TankManager)
     {
@@ -145,6 +145,15 @@ public class InputController : MonoBehaviour
                 m_RightDirectionMovement = l_v2MoveDirection;
             }
             l_rectCurrentJoystickKnob.anchoredPosition = l_v2MoveDirection * l_RectHalf;
+        }
+        else
+        {
+            if (m_FingerRight != null || m_FingerLeft != null)
+            {
+                RectTransform l_rectBtn = m_UiManager.BtnFire.GetComponent<RectTransform>();
+                l_rectBtn.rect.Contains(a_Finger.screenPosition);
+                m_UiManager.BtnFire.onClick.Invoke();
+            }
         }
     }
 
@@ -250,23 +259,8 @@ public class InputController : MonoBehaviour
         m_SpawnAction.DisableDirectAction();
     }
 
-    public void onGameStateChanged(GameManager.GAME_STATE a_GameState)
-    {
-        //if (a_GameState == GameManager.GAME_STATE.GAMEPLAY)
-        //{
-        //    EnableTouchCallbacks();
-        //}
-        //else
-        //{
-        //    DisableTouchCallbacks();
-        //}
-    }
-
     void Update()
     {
-        m_txtMoveVals.text = "Left: " + m_LeftDirectionMovement.normalized.x + "," + m_LeftDirectionMovement.normalized.y + "\n" + "Right: " + m_RightDirectionMovement.normalized.x + "," + m_RightDirectionMovement.normalized.y;
-        //Debug.LogError("" + m_LeftRectJoystickArea.TransformPoint(m_LeftRectJoystickArea.rect.center));
-
         var attemptSpawn = false;
         var currentControllerState = m_ARInteractorAsControllerInteractor.xrController.currentControllerState;
         if (currentControllerState.selectInteractionState.activatedThisFrame)

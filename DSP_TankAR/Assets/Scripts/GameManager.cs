@@ -44,7 +44,6 @@ public class GameManager : MonoBehaviour
 
                 m_UIManager.onGameStateChanged(m_CurrentGameState);
                 m_TankManager.onGameStateChanged(m_CurrentGameState);
-                m_InputController.onGameStateChanged(m_CurrentGameState);
             }
         }
     }

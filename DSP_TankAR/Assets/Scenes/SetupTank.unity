@@ -480,7 +480,9 @@ MonoBehaviour:
   m_Interactable: {fileID: 1009277401}
   m_Selector: {fileID: 1438854992}
   m_RocketSpawnPosition: {fileID: 1206810516}
-  mbShoot: 0
+  m_fMaxMoveRotaion: 20
+  m_RigidBody: {fileID: 1009277402}
+  m_fTankSpeed: 11
 --- !u!4 &1009277399
 Transform:
   m_ObjectHideFlags: 0

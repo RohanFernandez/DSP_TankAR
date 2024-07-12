@@ -29,6 +29,13 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private GameObject m_UIBottomPanel = null;
 
+    [SerializeField]
+    private UnityEngine.UI.Button m_btnFire = null;
+    public UnityEngine.UI.Button BtnFire
+    {
+        get { return m_btnFire; }
+    }
+
     public void initialize(System.Action<GameManager.GAME_STATE> a_actOnGameStateSet)
     {
         if (!m_bIsInitialized)

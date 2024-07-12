@@ -22,25 +22,42 @@ public class TankController : MonoBehaviour, IReusable
     // Callback on when this tank is selected
     System.Action<TankController> m_actOnTankSelected = null;
 
+    //Callback on returning rocket back to the pool
     System.Action<RocketProjectile> m_actOnReturnRocket = null;
 
     // Callback to get a canon rocket
     public delegate void ReferencedAction<T>(ref T referencedItem);
     private ReferencedAction<RocketProjectile> m_actCallbackGetCanonRocket = null;
 
+    //XR grabable component on the tank
     [SerializeField]
     private UnityEngine.XR.Interaction.Toolkit.XRGrabInteractable m_Interactable = null;
 
+    //The Sprite UI that indicates that this tank is the selected tank
     [SerializeField]
     private GameObject m_Selector = null;
 
+    //The positition in the forward of the canon where the rocket will be spawned to then be projected forward
     [SerializeField]
     private GameObject m_RocketSpawnPosition = null;
+
+    
+    // Max rotation of the tank
+    [SerializeField]
+    private float m_fMaxMoveRotaion = 20.0f;
+
+    //Rigidbody attached to the tank
+    [SerializeField]
+    private Rigidbody m_RigidBody = null;
+
+    //Tank movement speed
+    [SerializeField]
+    private float m_fTankSpeed = 20.0f;
 
     // Reset the canon on spawn. Resets the Canon rotation
     public void Reset()
     {
-        m_transCanon.rotation = Quaternion.identity;
+        //m_transCanon.rotation = Quaternion.identity;
     }
 
     /// <summary>
@@ -74,6 +91,10 @@ public class TankController : MonoBehaviour, IReusable
         m_Interactable.firstSelectEntered.RemoveListener(OnFirstSelectEntered);
     }
 
+    /// <summary>
+    /// Callback on selecting the tank
+    /// </summary>
+    /// <param name="args"></param>
     protected virtual void OnFirstSelectEntered(UnityEngine.XR.Interaction.Toolkit.SelectEnterEventArgs args)
     {
         if (m_actOnTankSelected != null)
@@ -100,6 +121,7 @@ public class TankController : MonoBehaviour, IReusable
         transform.position = a_v3Position;
         UnityEngine.XR.Interaction.Toolkit.Utilities.BurstMathUtility.ProjectOnPlane(a_Camera.transform.position - a_v3Position, Vector3.up, out var l_OutProjectedForward);
         transform.localRotation = Quaternion.LookRotation(l_OutProjectedForward, Vector3.up);
+        m_transCanon.localRotation = Quaternion.identity;
 
         m_actCallbackOnHit = callbackOnHit;
         m_actCallbackGetCanonRocket = callbackGetCanonRocket;
@@ -118,6 +140,9 @@ public class TankController : MonoBehaviour, IReusable
         }
     }
 
+    /// <summary>
+    /// Spawns a rocket and shoots it with the current forward direction of the canon as the direction of the rocket
+    /// </summary>
     public void shootCanon()
     {
         RocketProjectile l_RocketProjectile = null;
@@ -141,13 +166,22 @@ public class TankController : MonoBehaviour, IReusable
         m_Selector.SetActive(a_bIsSelected);
     }
 
-    public bool mbShoot = false;
-    void Update()
+    /// <summary>
+    /// Moves the tank with the velocity
+    /// </summary>
+    /// <param name="a_v3Velocity"></param>
+    public void moveInDirection(Vector3 a_v3Velocity)
     {
-        if (mbShoot)
-        {
-            shootCanon();
-            mbShoot = false;
-        }
+        UnityEngine.XR.Interaction.Toolkit.Utilities.BurstMathUtility.ProjectOnPlane(a_v3Velocity.normalized, Vector3.up, out var l_OutMovementDirection);
+        UnityEngine.XR.Interaction.Toolkit.Utilities.BurstMathUtility.ProjectOnPlane(transform.forward, Vector3.up, out var l_OutTankProjectedForward);
+
+        float l_fDirectionMultiplier = Vector3.Dot(l_OutMovementDirection.normalized, l_OutTankProjectedForward.normalized) > -0.75f ? 1.0f : -1.0f;
+
+        Quaternion l_quatFrom = Quaternion.LookRotation(l_OutTankProjectedForward, m_transCanonRotationAxisTransform.up);
+        Quaternion l_quatTo = Quaternion.LookRotation(l_OutMovementDirection.normalized * l_fDirectionMultiplier, m_transCanonRotationAxisTransform.up);
+
+        transform.rotation = Quaternion.RotateTowards(l_quatFrom, l_quatTo, Time.deltaTime * m_fMaxMoveRotaion);
+
+        m_RigidBody.AddForce(transform.forward * l_fDirectionMultiplier * m_fTankSpeed * Time.deltaTime, ForceMode.VelocityChange);
     }
 }
