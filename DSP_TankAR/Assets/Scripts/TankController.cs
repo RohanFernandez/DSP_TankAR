@@ -74,7 +74,6 @@ public class TankController : MonoBehaviour, IReusable
     {
         toggleVisibility(true);
         toggleSelector(false);
-        //m_Interactable.firstSelectEntered.AddListener(OnFirstSelectEntered);
         m_Interactable.firstSelectEntered.AddListener(OnFirstSelectEntered);
     }
 
@@ -82,15 +81,18 @@ public class TankController : MonoBehaviour, IReusable
     {
         toggleVisibility(false);
         toggleSelector(false);
-        //m_Interactable.firstSelectEntered.RemoveListener(OnFirstSelectEntered);
         m_Interactable.firstSelectEntered.RemoveListener(OnFirstSelectEntered);
+    }
+
+    private void OnFirstSelectEntered(UnityEngine.XR.Interaction.Toolkit.SelectEnterEventArgs a_Args)
+    {
+        onSelected();
     }
 
     /// <summary>
     /// Callback on selecting the tank
     /// </summary>
-    /// <param name="args"></param>
-    protected virtual void OnFirstSelectEntered(UnityEngine.XR.Interaction.Toolkit.SelectEnterEventArgs args)
+    public void onSelected()
     {
         if (m_actOnTankSelected != null)
         {

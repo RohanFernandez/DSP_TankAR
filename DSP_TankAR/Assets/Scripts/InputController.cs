@@ -63,6 +63,9 @@ public class InputController : MonoBehaviour
     [SerializeField]
     private UIManager m_UiManager = null;
 
+    [SerializeField]
+    private ARRaycastManager m_ARRaycastManager = null;
+
     public void initialize(TankManager a_TankManager)
     {
         if (!m_bIsInitialized)
@@ -76,6 +79,7 @@ public class InputController : MonoBehaviour
 
     private void OnEnable()
     {
+        ETouch.TouchSimulation.Enable();
         ETouch.EnhancedTouchSupport.Enable();
         ETouch.Touch.onFingerDown += callbackOnTouchOnFingerDown;
         ETouch.Touch.onFingerUp += callbackOnTouchOnFingerUp;
@@ -88,6 +92,7 @@ public class InputController : MonoBehaviour
         ETouch.Touch.onFingerUp -= callbackOnTouchOnFingerUp;
         ETouch.Touch.onFingerMove -= callbackOnTouchOnFingerMove;
         ETouch.EnhancedTouchSupport.Disable();
+        ETouch.TouchSimulation.Disable();
     }
 
     private void callbackOnTouchOnFingerDown(ETouch.Finger a_Finger)
@@ -97,6 +102,18 @@ public class InputController : MonoBehaviour
         RectTransform l_rectCurrentJoystickKnob = null;
         Vector2 l_v3JoystickAreaScreenPosition = Vector2.zero;
         float l_fDistanceFromKnobCenter = 0.0f;
+
+        //Manages tapping on a tank controller
+        Ray l_Ray = m_Camera.ScreenPointToRay(a_Finger.screenPosition);
+        if (Physics.Raycast(l_Ray, out RaycastHit l_outHitInfo))
+        {
+            TankController l_TankControllerSelected = l_outHitInfo.transform.GetComponent<TankController>();
+            if (l_TankControllerSelected != null)
+            {
+                l_TankControllerSelected.onSelected();
+            }
+        }
+
 
         bool l_bIsLeftFinger = true;
 
@@ -258,6 +275,8 @@ public class InputController : MonoBehaviour
     {
         m_SpawnAction.DisableDirectAction();
     }
+
+    public bool l_shoot = false;
 
     void Update()
     {

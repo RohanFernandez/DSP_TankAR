@@ -92,6 +92,11 @@ public class TankManager : MonoBehaviour
 
     public void onTankControllerSelected(TankController a_TankController)
     {
+        if (a_TankController == m_CurrentControlledTank && m_CurrentControlledTank != null)
+        {
+            return;
+        }
+
         if (m_CurrentControlledTank != null)
         {
             m_CurrentControlledTank.toggleSelector(false);
