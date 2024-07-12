@@ -474,7 +474,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40705da490b948c449c4a5394c652356, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_fCanonRotationPerSec: 30
+  m_fCanonRotationPerSec: 100
   m_transCanonRotationAxisTransform: {fileID: 254536954}
   m_transCanon: {fileID: 1779689574}
   m_Interactable: {fileID: 1009277401}

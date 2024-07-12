@@ -48,9 +48,15 @@ public class TankController : MonoBehaviour, IReusable
     /// Clockwise/Anti-clockwise with 
     /// </summary>
     /// <param name="a_bIsClockwise"></param>
-    public void rotateCannon(bool a_bIsClockwise = true)
+    public void rotateCannon(Vector3 a_JoystickDirection)
     {
-        m_transCanon.Rotate(m_transCanonRotationAxisTransform.up, m_fCanonRotationPerSec * Time.deltaTime * (a_bIsClockwise ? -1.0f : 1.0f));
+        UnityEngine.XR.Interaction.Toolkit.Utilities.BurstMathUtility.ProjectOnPlane(m_transCanon.forward, Vector3.up, out var l_outCanonProjectedForward);
+        UnityEngine.XR.Interaction.Toolkit.Utilities.BurstMathUtility.ProjectOnPlane(a_JoystickDirection.normalized, Vector3.up, out var l_outJoystickProjectedForward);
+
+        Quaternion l_quatFrom = Quaternion.LookRotation(l_outCanonProjectedForward, m_transCanonRotationAxisTransform.up);
+        Quaternion l_quatTo = Quaternion.LookRotation(l_outJoystickProjectedForward.normalized, m_transCanonRotationAxisTransform.up);
+
+        m_transCanon.transform.rotation = Quaternion.RotateTowards(l_quatFrom, l_quatTo, Time.deltaTime * m_fCanonRotationPerSec);
     }
 
     void IReusable.onRetrievedFromPool()

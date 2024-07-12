@@ -40,7 +40,12 @@ public class InputController : MonoBehaviour
     [SerializeField]
     RectTransform m_RightRectJoystickKnob = null;
 
-    Vector2 m_RightDirectionMovement = Vector2.zero;
+    [SerializeField]
+    private Vector2 m_RightDirectionMovement = Vector2.zero;
+    public Vector2 RightJoystickMovement
+    {
+        get { return m_RightDirectionMovement; }
+    }
 
     [SerializeField]
     RectTransform m_LeftRectJoystickArea = null;
@@ -48,7 +53,12 @@ public class InputController : MonoBehaviour
     [SerializeField]
     RectTransform m_LeftRectJoystickKnob = null;
 
-    Vector2 m_LeftDirectionMovement = Vector2.zero;
+    [SerializeField]
+    private Vector2 m_LeftDirectionMovement = Vector2.zero;
+    public Vector2 LeftJoystickMovement
+    {
+        get { return m_LeftDirectionMovement; }
+    }
 
     [SerializeField]
     TMPro.TMP_Text m_txtMoveVals = null;
@@ -64,7 +74,7 @@ public class InputController : MonoBehaviour
         }
     }
 
-    private void EnableTouchCallbacks()
+    private void OnEnable()
     {
         ETouch.EnhancedTouchSupport.Enable();
         ETouch.Touch.onFingerDown += callbackOnTouchOnFingerDown;
@@ -72,7 +82,7 @@ public class InputController : MonoBehaviour
         ETouch.Touch.onFingerMove += callbackOnTouchOnFingerMove;
     }
 
-    private void DisableTouchCallbacks()
+    private void OnDisable()
     {
         ETouch.Touch.onFingerDown -= callbackOnTouchOnFingerDown;
         ETouch.Touch.onFingerUp -= callbackOnTouchOnFingerUp;
@@ -242,19 +252,19 @@ public class InputController : MonoBehaviour
 
     public void onGameStateChanged(GameManager.GAME_STATE a_GameState)
     {
-        if (a_GameState == GameManager.GAME_STATE.GAMEPLAY)
-        {
-            EnableTouchCallbacks();
-        }
-        else
-        {
-            DisableTouchCallbacks();
-        }
+        //if (a_GameState == GameManager.GAME_STATE.GAMEPLAY)
+        //{
+        //    EnableTouchCallbacks();
+        //}
+        //else
+        //{
+        //    DisableTouchCallbacks();
+        //}
     }
 
     void Update()
     {
-        m_txtMoveVals.text = "Left: " + m_LeftDirectionMovement.x + "," + m_LeftDirectionMovement.y + "\n" + "Right: " + m_RightDirectionMovement.x + "," + m_RightDirectionMovement.y;
+        m_txtMoveVals.text = "Left: " + m_LeftDirectionMovement.normalized.x + "," + m_LeftDirectionMovement.normalized.y + "\n" + "Right: " + m_RightDirectionMovement.normalized.x + "," + m_RightDirectionMovement.normalized.y;
         //Debug.LogError("" + m_LeftRectJoystickArea.TransformPoint(m_LeftRectJoystickArea.rect.center));
 
         var attemptSpawn = false;

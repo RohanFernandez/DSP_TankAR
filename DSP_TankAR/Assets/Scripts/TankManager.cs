@@ -46,6 +46,11 @@ public class TankManager : MonoBehaviour
     // The current tank currently under the player's control
     private TankController m_CurrentControlledTank = null;
 
+    [SerializeField]
+    private InputController m_InputController = null;
+
+    [SerializeField]
+    private Camera m_Camera = null;
 
     public void initialize()
     {
@@ -161,6 +166,17 @@ public class TankManager : MonoBehaviour
             if (m_CurrentControlledTank != null)
             {
                 m_UIManager.toggleUIBottomPanel(true);
+            }
+        }
+    }
+
+    private void Update()
+    {
+        if ((GameManager.Instance.CurrentGameState == GameManager.GAME_STATE.GAMEPLAY) && (m_CurrentControlledTank != null))
+        {
+            if (m_InputController.RightJoystickMovement != Vector2.zero)
+            {
+                m_CurrentControlledTank.rotateCannon(m_Camera.transform.TransformDirection(m_InputController.RightJoystickMovement.normalized));
             }
         }
     }
