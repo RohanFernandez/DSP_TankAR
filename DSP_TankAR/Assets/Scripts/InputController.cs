@@ -107,8 +107,11 @@ public class InputController : MonoBehaviour
             TankController l_TankControllerSelected = l_outHitInfo.transform.GetComponent<TankController>();
             if (l_TankControllerSelected != null)
             {
-                l_TankControllerSelected.onSelected();
                 l_bRaycastDetectedTank = true;
+                if(!l_TankControllerSelected.IsDestroyed)
+                {
+                    l_TankControllerSelected.onSelected();
+                }
             }
         }
 

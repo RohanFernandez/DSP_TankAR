@@ -125,7 +125,6 @@ public class TankManager : MonoBehaviour
     /// <param name="a_Tank"></param>
     public void destroyTank(TankController a_Tank)
     {
-        m_TankControllerPool.returnToPool(a_Tank);
         --m_iTanksActive;
         ++m_iTanksDestroyed;
         updateTanksAliveDestroyedUILabels();

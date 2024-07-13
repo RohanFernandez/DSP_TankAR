@@ -54,6 +54,14 @@ public class TankController : MonoBehaviour, IReusable
     [SerializeField]
     private float m_fTankSpeed = 20.0f;
 
+    // Is the tank destroyed
+    private bool m_bIsDestroyed = false;
+    public bool IsDestroyed { get { return m_bIsDestroyed; } }
+
+    //The Sprite UI that indicates that this tank is destroyed
+    [SerializeField]
+    private GameObject m_Destroyed = null;
+
     /// <summary>
     /// Rotates the cannon.
     /// Clockwise/Anti-clockwise with 
@@ -75,6 +83,9 @@ public class TankController : MonoBehaviour, IReusable
         toggleVisibility(true);
         toggleSelector(false);
         m_Interactable.firstSelectEntered.AddListener(OnFirstSelectEntered);
+        m_bIsDestroyed = false;
+        m_Destroyed.SetActive(false);
+        m_Interactable.enabled = true;
     }
 
     void IReusable.onReturnedToPool()
@@ -94,6 +105,7 @@ public class TankController : MonoBehaviour, IReusable
     /// </summary>
     public void onSelected()
     {
+        if (m_bIsDestroyed) { return; }
         if (m_actOnTankSelected != null)
         {
             m_actOnTankSelected(this);
@@ -131,6 +143,13 @@ public class TankController : MonoBehaviour, IReusable
     /// </summary>
     public void onTankHit()
     {
+        if (m_bIsDestroyed) { return; }
+
+        m_Interactable.firstSelectEntered.RemoveListener(OnFirstSelectEntered);
+        m_Destroyed.SetActive(true);
+        m_Interactable.enabled = false;
+        m_bIsDestroyed = true;
+
         if (m_actCallbackOnHit != null)
         {
             m_actCallbackOnHit(this);
