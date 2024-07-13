@@ -1257,6 +1257,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2512387469002778328, guid: 48cb3fb68c91eb94999fd99957eb0cae,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2512387470319625105, guid: 48cb3fb68c91eb94999fd99957eb0cae,
         type: 3}
       propertyPath: m_RaycastMask.m_Bits
@@ -1908,18 +1913,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baa26031430fad24f99a0fcbb0a54d91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SpawnAction:
-    m_UseReference: 0
-    m_Action:
-      m_Name: Spawn
-      m_Type: 1
-      m_ExpectedControlType: 
-      m_Id: 74bb96e4-3cde-468d-bacf-9fba175f656c
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
   m_Camera: {fileID: 639681909}
   m_ARInteractorObject: {fileID: 770180924}
   m_ViewportPeriphery: 0.15
