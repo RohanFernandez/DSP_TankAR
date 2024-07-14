@@ -198,6 +198,6 @@ public class TankController : MonoBehaviour, IReusable
 
         transform.rotation = Quaternion.RotateTowards(l_quatFrom, l_quatTo, Time.deltaTime * m_fMaxMoveRotaion);
 
-        m_RigidBody.AddForce(transform.forward * l_fDirectionMultiplier * m_fTankSpeed * Time.deltaTime, ForceMode.VelocityChange);
+        m_RigidBody.velocity = transform.forward * l_fDirectionMultiplier * m_fTankSpeed * Time.deltaTime;
     }
 }
